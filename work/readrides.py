@@ -139,7 +139,7 @@ def test_memory(choice: str) -> tuple[int, int]:
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Incorrect usage. Provie as an argument one of the following:")
+        print("Incorrect usage. Provide as an argument one of the following:")
         print("> tuple")
         print("> dict")
         print("> class")
