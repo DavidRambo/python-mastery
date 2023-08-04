@@ -137,6 +137,77 @@ def test_memory(choice: str) -> tuple[int, int]:
     return tracemalloc.get_traced_memory()
 
 
+# Ex 2_5
+def read_rides_as_columns(filename):
+    """Read the bus ride data into 4 lists, representing columns."""
+    routes = []
+    dates = []
+    daytypes = []
+    numrides = []
+    with open(filename) as f:
+        rows = csv.reader(f)
+        headings = next(rows)
+        for row in rows:
+            routes.append(row[0])
+            dates.append(row[1])
+            daytypes.append(row[2])
+            numrides.append(row[3])
+    return dict(routes=routes, dates=dates, daytypes=daytypes, numrides=numrides)
+
+
+class RideData(collections.abc.Sequence):
+    def __init__(self):
+        self.routes = []
+        self.dates = []
+        self.daytypes = []
+        self.numrides = []
+
+    def __len__(self):
+        return len(self.routes)
+
+    def __getitem__(self, index):
+        if isinstance(index, slice):
+            return [
+                {
+                    "route": self.routes[idx],
+                    "date": self.dates[idx],
+                    "daytype": self.daytypes[idx],
+                    "rides": self.numrides[idx],
+                }
+                for idx in range(
+                    index.start, index.stop, index.step if index.step is not None else 1
+                )
+            ]
+        return {
+            "route": self.routes[index],
+            "date": self.dates[index],
+            "daytype": self.daytypes[index],
+            "rides": self.numrides[index],
+        }
+
+    def append(self, d):
+        self.routes.append(d["route"])
+        self.dates.append(d["date"])
+        self.daytypes.append(d["daytype"])
+        self.numrides.append(d["rides"])
+
+
+def read_rides_as_dict2(filename):
+    """Read the bus ride data as a list of dictionaries."""
+    records = RideData()
+    with open(filename) as f:
+        rows = csv.reader(f)
+        _ = next(rows)  # skip headers
+        for row in rows:
+            record = {}  # Must create here to break reference to previous dict.
+            record["route"] = row[0]
+            record["date"] = row[1]
+            record["daytype"] = row[2]
+            record["rides"] = row[3]
+            records.append(record)
+    return records
+
+
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Incorrect usage. Provide as an argument one of the following:")
